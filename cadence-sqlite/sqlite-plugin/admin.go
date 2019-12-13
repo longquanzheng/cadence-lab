@@ -22,6 +22,7 @@ package sqliteplugin
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -50,13 +51,6 @@ const (
 		`new_version VARCHAR(64), ` +
 		`old_version VARCHAR(64), ` +
 		`PRIMARY KEY (year, month, update_time));`
-
-	// NOTE we have to use %v because somehow postgres doesn't work with ? here
-	// It's a small bug in sqlx library
-	// TODO https://github.com/uber/cadence/issues/2893
-	createDatabaseQuery = "CREATE database %v"
-
-	dropDatabaseQuery = "Drop database %v"
 
 	listTablesQuery = "select table_name from information_schema.tables where table_schema='public'"
 
@@ -123,10 +117,10 @@ func (pdb *db) DropAllTables(database string) error {
 
 // CreateDatabase creates a database if it doesn't exist
 func (pdb *db) CreateDatabase(name string) error {
-	return pdb.Exec(fmt.Sprintf(createDatabaseQuery, name))
+	return nil
 }
 
 // DropDatabase drops a database
 func (pdb *db) DropDatabase(name string) error {
-	return pdb.Exec(fmt.Sprintf(dropDatabaseQuery, name))
+	return os.Remove(name)
 }

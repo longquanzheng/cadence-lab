@@ -21,9 +21,7 @@
 package sqliteplugin
 
 import (
-	"fmt"
-	"net"
-
+	gosql "database/sql"
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/sqlx"
 
@@ -34,7 +32,7 @@ import (
 
 const (
 	// PluginName is the name of the plugin
-	PluginName             = "postgres"
+	PluginName             = "sqlite"
 	dataSourceNamePostgres = "user=%v password=%v host=%v port=%v dbname=%v sslmode=disable "
 )
 
@@ -71,18 +69,14 @@ func (d *plugin) CreateAdminDB(cfg *config.SQL) (sqlplugin.AdminDB, error) {
 // SQL database and the object can be used to perform CRUD operations on
 // the tables in the database
 func (d *plugin) createDBConnection(cfg *config.SQL) (*sqlx.DB, error) {
-	host, port, err := net.SplitHostPort(cfg.ConnectAddr)
-	if err != nil {
-		return nil, fmt.Errorf("invalid connect address, it must be in host:port format, %v, err: %v", cfg.ConnectAddr, err)
-	}
-
 	dbName := cfg.DatabaseName
-	//NOTE: postgres doesn't allow to connect with empty dbName, the admin dbName is "postgres"
+	//NOTE: sqlite doesn't allow to connect with empty dbName, the admin dbName is "admin"
 	if dbName == "" {
-		dbName = "postgres"
+		dbName = "admin.db"
 	}
-	db, err := sqlx.Connect(PluginName, fmt.Sprintf(dataSourceNamePostgres, cfg.User, cfg.Password, host, port, dbName))
 
+	sdb, err := gosql.Open("sqlite3", dbName)
+	db := sqlx.NewDb(sdb, "sqlite3")
 	if err != nil {
 		return nil, err
 	}

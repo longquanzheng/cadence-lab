@@ -30,16 +30,12 @@ import (
 )
 
 const (
-	testUser      = "postgres"
-	testPassword  = "cadence"
-	testSchemaDir = "schema/postgres"
+	testSchemaDir = "/Users/longer/cadence-extensions/cadence-sqlite/sqlite-schema/"
 )
 
 func getTestClusterOption() *pt.TestBaseOptions {
 	return &pt.TestBaseOptions{
 		SQLDBPluginName: PluginName,
-		DBUsername:      testUser,
-		DBPassword:      testPassword,
 		DBHost:          environment.GetPostgresAddress(),
 		DBPort:          environment.GetPostgresPort(),
 		SchemaDir:       testSchemaDir,
