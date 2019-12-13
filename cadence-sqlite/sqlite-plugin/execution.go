@@ -45,8 +45,8 @@ const (
 	lockExecutionQueryBase = `SELECT next_event_id FROM executions 
  WHERE shard_id = $1 AND domain_id = $2 AND workflow_id = $3 AND run_id = $4`
 
-	writeLockExecutionQuery = lockExecutionQueryBase + ` FOR UPDATE`
-	readLockExecutionQuery  = lockExecutionQueryBase + ` FOR SHARE`
+	writeLockExecutionQuery = lockExecutionQueryBase + ` `
+	readLockExecutionQuery  = lockExecutionQueryBase + ` `
 
 	createCurrentExecutionQuery = `INSERT INTO current_executions
 (shard_id, domain_id, workflow_id, run_id, create_request_id, state, close_status, start_version, last_write_version) VALUES
@@ -62,9 +62,9 @@ FROM current_executions WHERE shard_id = $1 AND domain_id = $2 AND workflow_id =
 ce.shard_id, ce.domain_id, ce.workflow_id, ce.run_id, ce.create_request_id, ce.state, ce.close_status, ce.start_version, e.last_write_version
 FROM current_executions ce
 INNER JOIN executions e ON e.shard_id = ce.shard_id AND e.domain_id = ce.domain_id AND e.workflow_id = ce.workflow_id AND e.run_id = ce.run_id
-WHERE ce.shard_id = $1 AND ce.domain_id = $2 AND ce.workflow_id = $3 FOR UPDATE`
+WHERE ce.shard_id = $1 AND ce.domain_id = $2 AND ce.workflow_id = $3 `
 
-	lockCurrentExecutionQuery = getCurrentExecutionQuery + ` FOR UPDATE`
+	lockCurrentExecutionQuery = getCurrentExecutionQuery + ` `
 
 	updateCurrentExecutionsQuery = `UPDATE current_executions SET
 run_id = :run_id,

@@ -38,8 +38,8 @@ const (
  SET range_id = $1, data = $2, data_encoding = $3 
  WHERE shard_id = $4`
 
-	lockShardQry     = `SELECT range_id FROM shards WHERE shard_id = $1 FOR UPDATE`
-	readLockShardQry = `SELECT range_id FROM shards WHERE shard_id = $1 FOR SHARE`
+	lockShardQry     = `SELECT range_id FROM shards WHERE shard_id = $1 `
+	readLockShardQry = `SELECT range_id FROM shards WHERE shard_id = $1 `
 )
 
 // InsertIntoShards inserts one or more rows into shards table

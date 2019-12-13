@@ -48,7 +48,7 @@ const (
 	deleteDomainByNameQuery = `DELETE FROM domains WHERE shard_id=$1 AND name = $2`
 
 	getDomainMetadataQuery    = `SELECT notification_version FROM domain_metadata`
-	lockDomainMetadataQuery   = `SELECT notification_version FROM domain_metadata FOR UPDATE`
+	lockDomainMetadataQuery   = `SELECT notification_version FROM domain_metadata `
 	updateDomainMetadataQuery = `UPDATE domain_metadata SET notification_version = $1 WHERE notification_version = $2`
 )
 

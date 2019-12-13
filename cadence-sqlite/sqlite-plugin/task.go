@@ -62,7 +62,7 @@ task_type = :task_type
 	deleteTaskListQry = `DELETE FROM task_lists WHERE shard_id=$1 AND domain_id=$2 AND name=$3 AND task_type=$4 AND range_id=$5`
 
 	lockTaskListQry = `SELECT range_id FROM task_lists ` +
-		`WHERE shard_id = $1 AND domain_id = $2 AND name = $3 AND task_type = $4 FOR UPDATE`
+		`WHERE shard_id = $1 AND domain_id = $2 AND name = $3 AND task_type = $4 `
 
 	getTaskMinMaxQry = `SELECT task_id, data, data_encoding ` +
 		`FROM tasks ` +
