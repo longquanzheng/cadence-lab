@@ -2,6 +2,8 @@ PROJECT_ROOT = example.com/cadence-sqlite
 
 export PATH := $(shell go env GOPATH)/bin:$(PATH)
 
+default: bins
+
 ifndef GOOS
 GOOS := $(shell go env GOOS)
 endif
@@ -51,3 +53,11 @@ install-schema-sqlite: cadence-sql-tool
 	./cadence-sql-tool --pl sqlite create --db cadence_visibility.db
 	./cadence-sql-tool --pl sqlite --db cadence_visibility.db setup-schema -v 0.0
 	./cadence-sql-tool --pl sqlite --db cadence_visibility.db update-schema -d ./sqlite-schema/visibility/versioned
+
+bins: cadence-server cadence-sql-tool
+
+clean:
+	rm -f cadence.db
+	rm -f cadence_visibility.db
+	rm -f cadence-sql-tool
+	rm -f cadence-server
