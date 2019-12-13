@@ -34,7 +34,7 @@ const (
 		`domain_id, workflow_id, run_id, start_time, execution_time, workflow_type_name, memo, encoding) ` +
 		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
-	templateCreateWorkflowExecutionClosed = `INSERT INTO executions_visibility (` +
+	templateCreateWorkflowExecutionClosed = `REPLACE INTO executions_visibility (` +
 		`domain_id, workflow_id, run_id, start_time, execution_time, workflow_type_name, close_time, close_status, history_length, memo, encoding) ` +
 		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 
