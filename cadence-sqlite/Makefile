@@ -44,10 +44,10 @@ fmt:
 	@echo "running goimports"
 	@goimports -local "github.com/uber/cadence" -w $(ALL_SRC)
 
-install-schema-sqlite: bins
-	./cadence-sql-tool --pl sqlite create --db cadence
-	./cadence-sql-tool --pl sqlite --db cadence setup -v 0.0
-	./cadence-sql-tool --pl sqlite --db cadence update-schema -d ./schema/postgres/cadence/versioned
-	./cadence-sql-tool --pl sqlite create --db cadence_visibility
-	./cadence-sql-tool --pl sqlite --db cadence_visibility setup-schema -v 0.0
-	./cadence-sql-tool --pl sqlite --db cadence_visibility update-schema -d ./schema/postgres/visibility/versioned
+install-schema-sqlite: cadence-sql-tool
+	./cadence-sql-tool --pl sqlite create --db cadence.db
+	./cadence-sql-tool --pl sqlite --db cadence.db setup -v 0.0
+	./cadence-sql-tool --pl sqlite --db cadence.db update-schema -d ./sqlite-schema/cadence/versioned
+	./cadence-sql-tool --pl sqlite create --db cadence_visibility.db
+	./cadence-sql-tool --pl sqlite --db cadence_visibility.db setup-schema -v 0.0
+	./cadence-sql-tool --pl sqlite --db cadence_visibility.db update-schema -d ./sqlite-schema/visibility/versioned
