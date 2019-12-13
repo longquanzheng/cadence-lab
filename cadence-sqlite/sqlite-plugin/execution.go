@@ -242,7 +242,7 @@ func (pdb *db) DeleteFromTransferTasks(filter *sqlplugin.TransferTasksFilter) (s
 // InsertIntoTimerTasks inserts one or more rows into timer_tasks table
 func (pdb *db) InsertIntoTimerTasks(rows []sqlplugin.TimerTasksRow) (sql.Result, error) {
 	for i := range rows {
-		rows[i].VisibilityTimestamp = pdb.converter.ToPostgresDateTime(rows[i].VisibilityTimestamp)
+		rows[i].VisibilityTimestamp = pdb.converter.ToDBTime(rows[i].VisibilityTimestamp)
 	}
 	return pdb.conn.NamedExec(createTimerTasksQuery, rows)
 }
@@ -250,15 +250,15 @@ func (pdb *db) InsertIntoTimerTasks(rows []sqlplugin.TimerTasksRow) (sql.Result,
 // SelectFromTimerTasks reads one or more rows from timer_tasks table
 func (pdb *db) SelectFromTimerTasks(filter *sqlplugin.TimerTasksFilter) ([]sqlplugin.TimerTasksRow, error) {
 	var rows []sqlplugin.TimerTasksRow
-	*filter.MinVisibilityTimestamp = pdb.converter.ToPostgresDateTime(*filter.MinVisibilityTimestamp)
-	*filter.MaxVisibilityTimestamp = pdb.converter.ToPostgresDateTime(*filter.MaxVisibilityTimestamp)
+	*filter.MinVisibilityTimestamp = pdb.converter.ToDBTime(*filter.MinVisibilityTimestamp)
+	*filter.MaxVisibilityTimestamp = pdb.converter.ToDBTime(*filter.MaxVisibilityTimestamp)
 	err := pdb.conn.Select(&rows, getTimerTasksQuery, filter.ShardID, *filter.MinVisibilityTimestamp,
 		filter.TaskID, *filter.MinVisibilityTimestamp, *filter.MaxVisibilityTimestamp, *filter.PageSize)
 	if err != nil {
 		return nil, err
 	}
 	for i := range rows {
-		rows[i].VisibilityTimestamp = pdb.converter.FromPostgresDateTime(rows[i].VisibilityTimestamp)
+		rows[i].VisibilityTimestamp = pdb.converter.FromDBTime(rows[i].VisibilityTimestamp)
 	}
 	return rows, err
 }
@@ -266,11 +266,11 @@ func (pdb *db) SelectFromTimerTasks(filter *sqlplugin.TimerTasksFilter) ([]sqlpl
 // DeleteFromTimerTasks deletes one or more rows from timer_tasks table
 func (pdb *db) DeleteFromTimerTasks(filter *sqlplugin.TimerTasksFilter) (sql.Result, error) {
 	if filter.MinVisibilityTimestamp != nil {
-		*filter.MinVisibilityTimestamp = pdb.converter.ToPostgresDateTime(*filter.MinVisibilityTimestamp)
-		*filter.MaxVisibilityTimestamp = pdb.converter.ToPostgresDateTime(*filter.MaxVisibilityTimestamp)
+		*filter.MinVisibilityTimestamp = pdb.converter.ToDBTime(*filter.MinVisibilityTimestamp)
+		*filter.MaxVisibilityTimestamp = pdb.converter.ToDBTime(*filter.MaxVisibilityTimestamp)
 		return pdb.conn.Exec(rangeDeleteTimerTaskQuery, filter.ShardID, *filter.MinVisibilityTimestamp, *filter.MaxVisibilityTimestamp)
 	}
-	*filter.VisibilityTimestamp = pdb.converter.ToPostgresDateTime(*filter.VisibilityTimestamp)
+	*filter.VisibilityTimestamp = pdb.converter.ToDBTime(*filter.VisibilityTimestamp)
 	return pdb.conn.Exec(deleteTimerTaskQuery, filter.ShardID, *filter.VisibilityTimestamp, filter.TaskID)
 }
 
