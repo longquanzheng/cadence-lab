@@ -34,7 +34,7 @@ const (
 	// (default range ID: initialRangeID == 1)
 	createTaskListQry = `INSERT ` + taskListCreatePart
 
-	replaceTaskListQry = `INSERT ` + taskListCreatePart
+	replaceTaskListQry = `REPLACE ` + taskListCreatePart
 
 	updateTaskListQry = `UPDATE task_lists SET
 range_id = :range_id,
