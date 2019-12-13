@@ -44,10 +44,10 @@ fmt:
 	@echo "running goimports"
 	@goimports -local "github.com/uber/cadence" -w $(ALL_SRC)
 
-install-schema-postgres: bins
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite create --db cadence
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence setup -v 0.0
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence update-schema -d ./schema/postgres/cadence/versioned
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite create --db cadence_visibility
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence_visibility setup-schema -v 0.0
-	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence_visibility update-schema -d ./schema/postgres/visibility/versioned
+install-schema-sqlite: bins
+	./cadence-sql-tool --pl sqlite create --db cadence
+	./cadence-sql-tool --pl sqlite --db cadence setup -v 0.0
+	./cadence-sql-tool --pl sqlite --db cadence update-schema -d ./schema/postgres/cadence/versioned
+	./cadence-sql-tool --pl sqlite create --db cadence_visibility
+	./cadence-sql-tool --pl sqlite --db cadence_visibility setup-schema -v 0.0
+	./cadence-sql-tool --pl sqlite --db cadence_visibility update-schema -d ./schema/postgres/visibility/versioned
