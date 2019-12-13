@@ -34,11 +34,7 @@ const (
 	// (default range ID: initialRangeID == 1)
 	createTaskListQry = `INSERT ` + taskListCreatePart
 
-	replaceTaskListQry = `INSERT ` + taskListCreatePart +
-		`ON CONFLICT (shard_id, domain_id, name, task_type) DO UPDATE
-SET range_id = excluded.range_id,
-data = excluded.data,
-data_encoding = excluded.data_encoding`
+	replaceTaskListQry = `INSERT ` + taskListCreatePart
 
 	updateTaskListQry = `UPDATE task_lists SET
 range_id = :range_id,

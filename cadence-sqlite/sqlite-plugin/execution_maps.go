@@ -42,16 +42,10 @@ run_id = $4`
 	// So that this query can be used with BindNamed
 	// %[4]v should be the name of the key associated with the map
 	// e.g. for ActivityInfo it is "schedule_id"
-	setKeyInMapQueryTemplate = `INSERT INTO %[1]v
+	setKeyInMapQueryTemplate = `REPLACE INTO %[1]v
 (shard_id, domain_id, workflow_id, run_id, %[4]v, %[2]v)
 VALUES
-(:shard_id, :domain_id, :workflow_id, :run_id, :%[4]v, %[3]v)
-ON CONFLICT (shard_id, domain_id, workflow_id, run_id, %[4]v) DO UPDATE 
-  SET shard_id = excluded.shard_id,
-      domain_id = excluded.domain_id,
-      workflow_id = excluded.workflow_id,
-	  run_id = excluded.run_id,
-      %[4]v = excluded.%[4]v `
+(:shard_id, :domain_id, :workflow_id, :run_id, :%[4]v, %[3]v)`
 
 	// %[2]v is the name of the key
 	deleteKeyInMapQueryTemplate = `DELETE FROM %[1]v
@@ -82,10 +76,9 @@ workflow_id = $3 AND
 run_id = $4
 `
 
-	createSignalsRequestedSetQuery = `INSERT INTO signals_requested_sets
+	createSignalsRequestedSetQuery = `INSERT OR IGNORE INTO signals_requested_sets
 (shard_id, domain_id, workflow_id, run_id, signal_id) VALUES
-(:shard_id, :domain_id, :workflow_id, :run_id, :signal_id)
-ON CONFLICT (shard_id, domain_id, workflow_id, run_id, signal_id) DO NOTHING`
+(:shard_id, :domain_id, :workflow_id, :run_id, :signal_id)`
 
 	deleteSignalsRequestedSetQuery = `DELETE FROM signals_requested_sets
 WHERE

@@ -30,24 +30,13 @@ import (
 )
 
 const (
-	templateCreateWorkflowExecutionStarted = `INSERT INTO executions_visibility (` +
+	templateCreateWorkflowExecutionStarted = `INSERT OR IGNORE INTO executions_visibility (` +
 		`domain_id, workflow_id, run_id, start_time, execution_time, workflow_type_name, memo, encoding) ` +
-		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (domain_id, run_id) DO NOTHING`
+		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
 	templateCreateWorkflowExecutionClosed = `INSERT INTO executions_visibility (` +
 		`domain_id, workflow_id, run_id, start_time, execution_time, workflow_type_name, close_time, close_status, history_length, memo, encoding) ` +
-		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		ON CONFLICT (domain_id, run_id) DO UPDATE 
-		  SET workflow_id = excluded.workflow_id,
-		      start_time = excluded.start_time,
-		      execution_time = excluded.execution_time,
-              workflow_type_name = excluded.workflow_type_name,
-			  close_time = excluded.close_time,
-			  close_status = excluded.close_status,
-			  history_length = excluded.history_length,
-			  memo = excluded.memo,
-			  encoding = excluded.encoding`
+		`VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
 
 	// RunID condition is needed for correct pagination
 	templateConditions1 = ` AND domain_id = $1

@@ -29,11 +29,7 @@ import (
 const (
 	readSchemaVersionQuery = `SELECT curr_version from schema_version where db_name=$1`
 
-	writeSchemaVersionQuery = `INSERT into schema_version(db_name, creation_time, curr_version, min_compatible_version) VALUES ($1,$2,$3,$4)
-										ON CONFLICT (db_name) DO UPDATE 
-										  SET creation_time = excluded.creation_time,
-										   	  curr_version = excluded.curr_version,
-										      min_compatible_version = excluded.min_compatible_version;`
+	writeSchemaVersionQuery = `REPLACE INTO schema_version(db_name, creation_time, curr_version, min_compatible_version) VALUES ($1,$2,$3,$4)`
 
 	writeSchemaUpdateHistoryQuery = `INSERT into schema_update_history(year, month, update_time, old_version, new_version, manifest_md5, description) VALUES($1,$2,$3,$4,$5,$6,$7)`
 

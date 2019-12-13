@@ -2,3 +2,4 @@ cadence-server
 cadence
 sqlite-plugin/test_*
 sqlite-plugin/admin.db
+.idea/
