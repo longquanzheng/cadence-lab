@@ -3,4 +3,5 @@ cadence-sql-tool
 sqlite-plugin/test_*
 sqlite-plugin/admin.db
 .idea/
+*.db
 .*
