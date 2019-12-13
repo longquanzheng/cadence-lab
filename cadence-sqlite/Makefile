@@ -1,0 +1,53 @@
+PROJECT_ROOT = example.com/cadence-sqlite
+
+export PATH := $(shell go env GOPATH)/bin:$(PATH)
+
+ifndef GOOS
+GOOS := $(shell go env GOOS)
+endif
+
+ifndef GOARCH
+GOARCH := $(shell go env GOARCH)
+endif
+
+# Automatically gather all srcs
+ALL_SRC := $(shell find . -name "*.go" | grep -v -e Godeps -e vendor \
+	-e ".*/\..*" \
+	-e ".*/_.*" \
+	-e ".*/mocks.*")
+
+cadence-sql-tool: $(ALL_SRC)
+	@echo "compiling cadence-sql-tool with OS: $(GOOS), ARCH: $(GOARCH)"
+	go build -i -o cadence-sql-tool cmd/sql/main.go
+
+cadence-server: $(ALL_SRC)
+	@echo "compiling cadence-server with OS: $(GOOS), ARCH: $(GOARCH)"
+	go build -ldflags '$(GO_BUILD_LDFLAGS)' -i -o cadence-server cmd/server/main.go
+
+lint:
+	@echo "running linter"
+	@lintFail=0; for file in $(ALL_SRC); do \
+		golint "$$file"; \
+		if [ $$? -eq 1 ]; then lintFail=1; fi; \
+	done; \
+	if [ $$lintFail -eq 1 ]; then exit 1; fi;
+	@OUTPUT=`gofmt -l $(ALL_SRC) 2>&1`; \
+	if [ "$$OUTPUT" ]; then \
+		echo "Run 'make fmt'. gofmt must be run on the following files:"; \
+		echo "$$OUTPUT"; \
+		exit 1; \
+	fi
+
+fmt:
+	GO111MODULE=off go get -u github.com/myitcv/gobin
+	GOOS= GOARCH= gobin -mod=readonly golang.org/x/tools/cmd/goimports
+	@echo "running goimports"
+	@goimports -local "github.com/uber/cadence" -w $(ALL_SRC)
+
+install-schema-postgres: bins
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite create --db cadence
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence setup -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence update-schema -d ./schema/postgres/cadence/versioned
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite create --db cadence_visibility
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence_visibility setup-schema -v 0.0
+	./cadence-sql-tool --ep 127.0.0.1 -p 5432 -u postgres -pw cadence --pl sqlite --db cadence_visibility update-schema -d ./schema/postgres/visibility/versioned
