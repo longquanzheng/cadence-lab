@@ -39,7 +39,7 @@ var _ sqlplugin.DB = (*db)(nil)
 var _ sqlplugin.Tx = (*db)(nil)
 
 func (pdb *db) IsDupEntryError(err error) bool {
-	sqlErr, ok := err.(*sqlite3.Error)
+	sqlErr, ok := err.(sqlite3.Error)
 	return ok && sqlErr.Code == sqlite3.ErrConstraint
 }
 
