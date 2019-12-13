@@ -18,7 +18,7 @@ ALL_SRC := $(shell find . -name "*.go" | grep -v -e Godeps -e vendor \
 
 cadence-sql-tool: $(ALL_SRC)
 	@echo "compiling cadence-sql-tool with OS: $(GOOS), ARCH: $(GOARCH)"
-	go build -i -o cadence-sql-tool cmd/sql/main.go
+	go build -i -o cadence-sql-tool cmd/sql-tool/main.go
 
 cadence-server: $(ALL_SRC)
 	@echo "compiling cadence-server with OS: $(GOOS), ARCH: $(GOARCH)"

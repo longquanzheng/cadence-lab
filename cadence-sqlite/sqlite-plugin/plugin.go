@@ -22,6 +22,7 @@ package sqliteplugin
 
 import (
 	gosql "database/sql"
+
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/sqlx"
 
