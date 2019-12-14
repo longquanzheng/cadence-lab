@@ -8,7 +8,7 @@ make
 ```
 2. Install schemas:
 ```
-install-schema-sqlite
+make install-schema-sqlite
 ```
 3. Run:
 ```
