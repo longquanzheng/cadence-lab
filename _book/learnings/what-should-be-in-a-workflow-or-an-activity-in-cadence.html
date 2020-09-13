@@ -1,0 +1,496 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>What code should be written in a workflow or an activity in Cadence, and how · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="This is probably one of the most common questions for anyone who is new to Cadence. The answer should be very clear, as workflow and activity are fundamentally different.">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-disqus/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="../" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Cadence-extensions
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">learnings</li>
+        
+        
+    
+        <li class="chapter active" data-level="2.1" data-path="what-should-be-in-a-workflow-or-an-activity-in-cadence.html">
+            
+                <a href="what-should-be-in-a-workflow-or-an-activity-in-cadence.html">
+            
+                    
+                    What code should be written in a workflow or an activity in Cadence, and how
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >What code should be written in a workflow or an activity in Cadence, and how</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="what-code-should-be-written-in-a-workflow-or-an-activity-in-cadence-and-how">What code should be written in a workflow or an activity in Cadence, and how</h1>
+<h2 id="the-problem">The Problem</h2>
+<p>Imagine a use case: we want move some data from one database system(Database-X) to another(Database-Y), with some data filtering and transformation. Let&apos;s assume the dataset is fitting in the memory so that you don&apos;t have to optimize it for now. Without using Cadence, we might use a naive implementation like the below code. </p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> MigrateData() error{
+    <span class="hljs-comment">// Step 1: first read all the data from DB-X</span>
+    connX, err := ConnectToDBX()
+    <span class="hljs-keyword">defer</span> connX.Close()
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+
+    queryResult, err := connX.SendQuery(<span class="hljs-string">&quot;some query&quot;</span>)
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+
+    dataStep1 := []RowDefX{}
+    <span class="hljs-keyword">for</span> ;queryResult.HasNext();{
+       row := queryResult.Next()
+       dataStep1 = <span class="hljs-built_in">append</span>(dataStep1, row)
+    }
+
+    <span class="hljs-comment">// Step 2: then do some filtering    </span>
+    dataStep2 := []RowDefX{}    
+    <span class="hljs-keyword">for</span> _, row:= <span class="hljs-keyword">range</span> dataStep1{
+       <span class="hljs-keyword">if</span> row.COLA == SOME_CONSTANT {
+          dataStep2 = <span class="hljs-built_in">append</span>(dataStep2, row)
+       }
+    }
+
+    <span class="hljs-comment">// Step 3: then do some complex transformation</span>
+    dataStep3 := []RowDefY{}    
+    id := <span class="hljs-number">0</span>
+    <span class="hljs-keyword">for</span> _, rowX:= <span class="hljs-keyword">range</span> dataStep1{
+        rowY.ID = id ++
+        rowY.COLA = transformA(rowX.COLA)
+        rowY.COLB = transformB(rowX.COLB)
+        rowY.COLC = transformC(rowX.COLC)
+    }
+
+    <span class="hljs-comment">// Step 4: finally write into DB-Y</span>
+    connY, err := ConnectToDBY()
+    <span class="hljs-keyword">defer</span> connY.Close()  
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+
+    <span class="hljs-keyword">for</span> ;rowY:=<span class="hljs-keyword">range</span> dataStep3 {
+       err := connY.WriteToDBY(rowY)
+       <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+    }  
+}
+</code></pre>
+<p>An experienced engineer already knows there are problems in this naive implementation, even it&apos;s fitting into memory. For example, if reading/writing into Databases are very slow, any host restart during the writing could cause the whole process failed, and we have to restart the process from very beginning. </p>
+<p>Cadence can help improve this application to be resilient. But what is the best way to write and organize in Cadence?</p>
+<h2 id="all-into-workflow-code">All into Workflow code</h2>
+<p>What if we write all the code in <a href="https://cadenceworkflow.io/docs/concepts/workflows/" target="_blank"><code>workflow</code></a> only? Without any  <a href="https://cadenceworkflow.io/docs/concepts/activities/" target="_blank"><code>activity</code></a>.</p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> MigrateDataWorkflow(ctx workflow.Context) error{
+    <span class="hljs-comment">// Everything in this method is exactly the same as the naive implementation</span>
+    <span class="hljs-comment">//</span>
+}
+</code></pre>
+<p>Would this work? The answer is NO. </p>
+<p>It could be worse than the naive implementation. Because this implementation will try to do everything in one workflow task(aka decision task), it might work in the same way as the naive implementation, if the whole process is fast enough. But by default a workflow task timeout is a few seconds. Hence in our scenario it&apos;s more likely that workers will keep on executing workflow tasks, but never be able to finish it. </p>
+<h2 id="all-in-one-single-activity">All in one single Activity</h2>
+<p>Activity is something to help. </p>
+<h3 id="recommendation-1">Recommendation #1</h3>
+<blockquote>
+<p><strong>Any resource consuming code should be in activities</strong></p>
+</blockquote>
+<p>Let start with putting everything into one single activity.</p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> MigrateDataWorkflow(ctx workflow.Context) error{
+  ao := workflow.ActivityOptions{
+        ScheduleToStartTimeout: time.Minute,
+        StartToCloseTimeout:    time.Hour,
+        RetryPolicy :&amp;RetryPolicy{
+                        InitialInterval:    time.Minute,
+                        BackoffCoefficient: <span class="hljs-number">1</span>,
+                        MaximumInterval:    time.Minute,
+                        ExpirationInterval: <span class="hljs-number">24</span>*time.Hour,        
+        }
+    }
+    ctx = workflow.WithActivityOptions(ctx, ao)
+
+  <span class="hljs-keyword">return</span> workflow.ExecuteActivity(ctx, MigrateDataActivity).Get(ctx, <span class="hljs-literal">nil</span>)
+}
+
+<span class="hljs-keyword">func</span> MigrateDataActivity(ctx context.Context) error{
+        <span class="hljs-comment">// Everything in this method is exactly the same as the naive implementation</span>
+        <span class="hljs-comment">//...</span>
+}
+</code></pre>
+<p>This implementation is better. Manipulating the activity StartToCloseTimeout let it at least do the same thing as the naive implementation. RetryPolicy will retry the whole activity, which is better than the implementation. During retrying, the activity task can be dispatched to a different worker host. This will make the application more resilient to some host specific issues.</p>
+<h2 id="two-activities">Two Activities</h2>
+<p>One drawback of the previous implementation is that when writing to DatabaseY fails, it will restart from beginning, reading from DatabaseX again. This is not ideal.  </p>
+<h3 id="recommendation-2">Recommendation #2</h3>
+<blockquote>
+<p><strong>Use activities to add checkpoints to progress</strong></p>
+</blockquote>
+<p>If there are two activities, one for reading and one for writing operation, the reading results can be saved as a checkpoint, so that the workflow doesn&apos;t need to read from database again when writing activity fails and do retry. </p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> MigrateDataWorkflow(ctx workflow.Context) error{
+  ao := workflow.ActivityOptions{
+        ScheduleToStartTimeout: time.Minute,
+        StartToCloseTimeout:    time.Hour,
+        RetryPolicy :&amp;RetryPolicy{
+                        InitialInterval:    time.Minute,
+                        BackoffCoefficient: <span class="hljs-number">2</span>,
+                        MaximumInterval:    <span class="hljs-number">10</span>*time.Minute,
+                        ExpirationInterval: <span class="hljs-number">24</span>*time.Hour,        
+        }
+    }
+    ctx = workflow.WithActivityOptions(ctx, ao)
+
+    <span class="hljs-comment">//step 1</span>
+  dataStep1 := []RowDefX{}
+  err := workflow.ExecuteActivity(ctx, ReadFromDbxActivity).Get(ctx, &amp;dataStep1)
+
+  <span class="hljs-comment">// the code of step 2 in naive implementation</span>
+    <span class="hljs-comment">//...</span>
+
+  <span class="hljs-comment">// the code of step 3 in naive implementation</span>
+    <span class="hljs-comment">//...        </span>
+
+    <span class="hljs-comment">//step 4</span>
+  <span class="hljs-keyword">return</span> workflow.ExecuteActivity(ctx, ReadFromDbxActivity, dataStep3).Get(ctx, <span class="hljs-literal">nil</span>)
+
+}
+
+<span class="hljs-keyword">func</span> ReadFromDbxActivity(ctx context.Context) ([]RowDefX, error){
+        <span class="hljs-comment">// the code of step 1 in naive implementation</span>
+        <span class="hljs-comment">//...</span>
+        <span class="hljs-keyword">return</span> dataStep1
+}
+
+<span class="hljs-keyword">func</span> WriteDbyActivity(ctx context.Context, []RowDefY) (error){
+        <span class="hljs-comment">// the code of step 4 in naive implementation</span>
+        <span class="hljs-comment">//...</span>
+}
+</code></pre>
+<h2 id="workflow-determinism-and-data-transportation">Workflow Determinism And Data Transportation</h2>
+<p>Even though the above implementation is better in terms of checkpointing, it may cause some other issues. It leaves the code of filtering and transforming in workflow code. This could cause unnecessary non-deterministic errors, if later on we want to change the logic. </p>
+<p>In addition, because of performance and limitation of the underlying persistence, Cadence service usually has certain size limits of transporting data within a workflow, eg., from one activity to another. </p>
+<h3 id="recommendation-3">Recommendation #<strong>3</strong></h3>
+<blockquote>
+<p><strong>Minimize workflow code to contain only code for orchestrating Cadence entities.</strong></p>
+</blockquote>
+<h3 id="recommendation-4">Recommendation #4</h3>
+<blockquote>
+<p><strong>Minimize data transportation within a workflow</strong></p>
+</blockquote>
+<p>To follow recommendation #1, consider moving the filtering code into reading activity, and the transforming into either reading or writing activity. </p>
+<p>For recommendation #2, there are different ways to go:</p>
+<ul>
+<li><strong>Option 1</strong> Passing a reference to the data instead. <ul>
+<li><strong>Option 1.1</strong> The data can be saved into local file system, and then a path to the data is passed. This requires the the two activities to be executed in the same host, otherwise the path is not valid. Because there are more than one hosts in a <a href="https://cadenceworkflow.io/docs/concepts/task-lists/" target="_blank">Tasklist</a>, a <a href="https://cadenceworkflow.io/docs/go-client/sessions/#basic-usage" target="_blank">Session</a> is needed to ensure two activities are always running within the same host. </li>
+<li><strong>Option 1.2</strong> The data can be saved into other blob storage, like S3 buckets. This won&apos;t require Session, but another dependency is required instead.</li>
+</ul>
+</li>
+<li><strong>Option 2</strong> Splitting the workload into small chucks for each activity. In this way, a loop will be implemented for read and write activities --- the read activity will return with some tracking point, whenever the data to return is near the limit, and then pass into the write  activity. After writing it will go to reading from the tracking point, again if there is more data to read. </li>
+</ul>
+<p>However, Option 2 could cause  issues, if there are hundreds of thousands of chunks. </p>
+<h3 id="recommendation-5">Recommendation #5</h3>
+<blockquote>
+<p><strong>Do NOT let workflow history grow infinitely</strong></p>
+</blockquote>
+<p><strong>Option 2+:</strong> Based on Option2, workflow will do continueAsNew when the number of chunks executed in current run has exceeded a certain number, say 1000. </p>
+<p><strong>Option 3</strong>: If possible, that we can put read and write into a single activity(they are not owned by different teams), there is another way to improve the workflow using Activity <a href="https://cadenceworkflow.io/docs/go-client/activities/#overview" target="_blank">Heartbeat</a>. Heartbeat is an advanced feature in Cadence activity. It allows an activity to add checkpoints, and recovery from the latest one whenever the activity restarted, just like workflows using activity for checkpointing . Even thought it&apos;s also a single activity, differently from the implementation of &quot;<a href="what-should-be-in-a-workflow-or-an-activity-in-cadence.html#all-in-one-single-activity">All in one single Activity</a>&quot;, activity progress is periodically being sent to Cadence  service.</p>
+<p>The trade off of Option 3 is some complexity involved when using Heartbeat feature. It also drops some debuggability compared to Option 2+, because we can&apos;t <a href="https://cadenceworkflow.io/docs/go-client/queries/#consistent-query" target="_blank">query</a> internal states of an activity like like a workflow. </p>
+<p>But it&apos;s worthy when you need this optimization. In fact, it&apos;s commonly used in Cadence server, to implement  system workflows like <a href="https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182" target="_blank">Batch operation</a>, Scanners etc. </p>
+<p>Here is a sample code of Option 3. If you need to refer to some production ready code,  <a href="https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182" target="_blank">Batch operation</a> is a good example.</p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> MigrateDataWorkflow(ctx workflow.Context) error{
+  ao := workflow.ActivityOptions{
+    <span class="hljs-comment">// This is the only difference in ActivityOptions compared to &quot;All in one single Activity&quot;</span>
+    <span class="hljs-comment">// It should be the maximum time we expect between two &quot;RecoardHeartbeat()&quot;</span>
+    HeartbeatTimeout:       time.Minute,
+
+        ScheduleToStartTimeout: time.Minute,
+        StartToCloseTimeout:    time.Hour,
+        RetryPolicy :&amp;RetryPolicy{
+                        InitialInterval:    time.Minute,
+                        BackoffCoefficient: <span class="hljs-number">2</span>,
+                        MaximumInterval:    <span class="hljs-number">10</span>*time.Minute,
+                        ExpirationInterval: <span class="hljs-number">24</span>*time.Hour,        
+        }
+    }
+    ctx = workflow.WithActivityOptions(ctx, ao)
+
+  <span class="hljs-keyword">return</span> workflow.ExecuteActivity(ctx, MigrateDataActivity).Get(ctx, <span class="hljs-literal">nil</span>)
+}
+
+<span class="hljs-keyword">func</span> MigrateDataActivity(ctx context.Context) error{
+  connX, err := ConnectToDBX()
+  <span class="hljs-keyword">defer</span> connX.Close()
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+
+  connY, err := ConnectToDBY()
+  <span class="hljs-keyword">defer</span> connY.Close()  
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+
+  <span class="hljs-comment">// Step 0: get last HeartbeatDetails in case of recovering from last execution</span>
+  currentPage = BEGINNING
+  <span class="hljs-keyword">if</span> activity.HasHeartbeatDetails(ctx) {
+          activity.GetHeartbeatDetails(ctx, &amp;currentPage);
+  }
+
+
+  <span class="hljs-keyword">for</span>{
+      <span class="hljs-comment">// Step 1: first read all the data from DB-X</span>
+      queryResult, err := connX.SendQuery(<span class="hljs-string">&quot;some query with pagination parameter&quot;</span>, currentPage)
+      <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+      currentPage = queryResult.GetNextPageCursor()
+
+      dataStep1 := []RowDefX{}
+      <span class="hljs-keyword">for</span> ;queryResult.HasNext();{
+         row := queryResult.Next()
+         dataStep1 = <span class="hljs-built_in">append</span>(dataStep1, row)
+      }
+
+      <span class="hljs-comment">// the code of step 2 in naive implementation</span>
+           <span class="hljs-comment">//...</span>
+
+      <span class="hljs-comment">// the code of step 3 in naive implementation</span>
+      <span class="hljs-comment">//...    </span>
+
+      <span class="hljs-comment">// Step 4: finally write into DB-Y</span>
+      <span class="hljs-keyword">for</span> ;rowY:=<span class="hljs-keyword">range</span> dataStep3 {
+         err := connY.WriteToDBY(rowY)
+         <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> { <span class="hljs-keyword">return</span> err)
+      }
+
+      <span class="hljs-comment">// Here is the trick to upload the checkpoint.</span>
+      <span class="hljs-comment">// Note that calling RecordHeartbeat here doesn&apos;t always send the checkpoint to Cadence immedieatlly.</span>
+      <span class="hljs-comment">// There is some magic in Cadence SDK to control the timing to actually do it. So you don&apos;t need to optimize the performace for Cadence.</span>
+      <span class="hljs-keyword">if</span> currentPage != <span class="hljs-literal">nil</span>{
+         activity.RecordHeartbeat(ctx, currentPage)
+      }<span class="hljs-keyword">else</span>{
+         <span class="hljs-keyword">break</span>
+      }           
+  }
+
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>
+}
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Cadence-extensions">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"description":"This is probably one of the most common questions for anyone who is new to Cadence. The answer should be very clear, as workflow and activity are fundamentally different.","title":"What code should be written in a workflow or an activity in Cadence, and how","level":"2.1","depth":1,"previous":{"title":"Cadence-extensions","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":["disqus@0.1.0","livereload"],"pluginsConfig":{"disqus":{"useIdentifier":false,"shortName":"cadence-book-2"},"livereload":{},"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"learnings/what-should-be-in-a-workflow-or-an-activity-in-cadence.md","mtime":"2020-09-13T22:17:10.149Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-09-13T22:48:08.014Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-disqus/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

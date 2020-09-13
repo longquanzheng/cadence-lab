@@ -1,5 +1,5 @@
 {
-    "plugins": ["disqus"],
+    "plugins": ["disqus@0.1.0"],
     "pluginsConfig": {
         "disqus": {
             "shortName": "cadence-book-2"
