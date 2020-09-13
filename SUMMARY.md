@@ -4,5 +4,5 @@
 
 ## learnings
 
-* [What should be in a workflow or an activity in Cadence](learnings/what-should-be-in-a-workflow-or-an-activity-in-cadence.md)
+* [What code should be written in a workflow or an activity in Cadence, and how](learnings/what-should-be-in-a-workflow-or-an-activity-in-cadence.md)
 
