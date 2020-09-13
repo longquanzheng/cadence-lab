@@ -1,0 +1,25 @@
+{
+  "name": "cadence-extensions",
+  "version": "1.0.0",
+  "description": "--- description: a lab of my experiments and learnings for Cadence project ---",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/longquanzheng/cadence-extensions.git"
+  },
+  "author": "Quanzheng Long",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/longquanzheng/cadence-extensions/issues"
+  },
+  "homepage": "https://github.com/longquanzheng/cadence-extensions#readme",
+  "devDependencies": {
+    "gitbook-cli": "^2.3.2"
+  },
+  "dependencies": {
+    "gitbook-plugin-disqus": "^1.0.1"
+  }
+}
