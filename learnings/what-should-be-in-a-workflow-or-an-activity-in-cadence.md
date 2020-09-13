@@ -74,7 +74,7 @@ func MigrateDataWorkflow(ctx workflow.Context) error{
 
 Would this work? The answer is NO. 
 
-It could be worse than the naive implementation. Because this implementation will try to do everything in one workflow task\(aka decision task\), it might work in the same way as the naive implementation, if the whole process is fast enough. But by default a workflow task timeout is a few seconds. Hence in our scenario it's more likely that workers will keep on executing workflow tasks, but never be able to finish it. 
+It will be worse than the naive implementation.  This implementation will try to do everything in one workflow task\(aka decision task\), it might work in the same way as the naive implementation, if the whole process is fast enough. But by default a workflow task timeout is a few seconds. Hence in our scenario it's more likely that workers will keep on executing workflow tasks, but never be able to finish it. 
 
 ## All in one single Activity
 
@@ -197,7 +197,7 @@ However, Option 2 could cause  issues, if there are hundreds of thousands of chu
 
 The trade off of Option 3 is some complexity involved when using Heartbeat feature. It also drops some debuggability compared to Option 2+, because we can't [query](https://cadenceworkflow.io/docs/go-client/queries/#consistent-query) internal states of an activity like like a workflow. 
 
-But it's worthy when you need this optimization. In fact, it's commonly used in Cadence server, to implement  system workflows like [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182), Scanners etc. 
+But it's worthy when you need this optimization. In fact, it's commonly used in Cadence server, to implement  system workflows like [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182), History/Tasklist Scanners etc. 
 
 Here is a sample code of Option 3. If you need to refer to some production ready code,  [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182) is a good example.
 
