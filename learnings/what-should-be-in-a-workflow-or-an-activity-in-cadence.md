@@ -193,13 +193,13 @@ However, Option 2 could cause  issues, if there are hundreds of thousands of chu
 
 **Option 2+:** Based on Option2, workflow will do continueAsNew when the number of chunks executed in current run has exceeded a certain number, say 1000. 
 
-**Option 3**: If possible, that we can put read and write into a single activity\(they are not owned by different teams\), there is another way to improve the workflow using Activity [Heartbeat](https://cadenceworkflow.io/docs/go-client/activities/#overview). Heartbeat is an advanced feature in Cadence activity. It allows an activity to add checkpoints, and recovery from the latest one whenever the activity restarted. Different from the implementation of All in one single Activity, the activity progress is periodically being sent to Cadence  service.
+**Option 3**: If possible, that we can put read and write into a single activity\(they are not owned by different teams\), there is another way to improve the workflow using Activity [Heartbeat](https://cadenceworkflow.io/docs/go-client/activities/#overview). Heartbeat is an advanced feature in Cadence activity. It allows an activity to add checkpoints, and recovery from the latest one whenever the activity restarted, just like workflows using activity for checkpointing . Even thought it's also a single activity, differently from the implementation of "[All in one single Activity](what-should-be-in-a-workflow-or-an-activity-in-cadence.md#all-in-one-single-activity)", activity progress is periodically being sent to Cadence  service.
 
 The trade off of Option 3 is some complexity involved when using Heartbeat feature. It also drops some debuggability compared to Option 2+, because we can't [query](https://cadenceworkflow.io/docs/go-client/queries/#consistent-query) internal states of an activity like like a workflow. 
 
-But it's worthy when you need this optimization. In fact, it's commonly used in Cadence server itself, to implement  system workflows like [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182), Scanners etc. 
+But it's worthy when you need this optimization. In fact, it's commonly used in Cadence server, to implement  system workflows like [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182), Scanners etc. 
 
-Here is a sample code of Option 3. It's very similar to what  [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182) is doing.
+Here is a sample code of Option 3. If you need to refer to some production ready code,  [Batch operation](https://github.com/uber/cadence/blob/fb076fb6a74b9ccd94a177eda296abce043addb0/service/worker/batcher/workflow.go#L182) is a good example.
 
 ```go
 func MigrateDataWorkflow(ctx workflow.Context) error{
