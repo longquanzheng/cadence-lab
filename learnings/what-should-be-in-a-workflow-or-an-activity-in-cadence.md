@@ -9,7 +9,7 @@ description: >-
 
 ## The Problem
 
-Imagine a use case: we want move some data from one database system\(Database-X\) to another\(Database-Y\), with some data filtering and transformation. Let's assume the dataset is fitting in the memory so that you don't have to optimize it for now. Without using Cadence, we might use a naive implementation like the below code. 
+Imagine this use case: we want move some data from one database system\(Database-X\) to another\(Database-Y\), with some data filtering and transformation. Let's assume the dataset is fitting in the memory so that you don't have to optimize it for now. Without using Cadence, we might use a naive implementation like the below code. 
 
 ```go
 func MigrateData() error{
