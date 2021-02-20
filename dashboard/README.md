@@ -25,7 +25,7 @@ Note: `host.docker.internal` may not work for some docker versions, see https://
 
 * Go to Grafana: http://localhost:3000 , login as admin/admin. 
 * Configure Prometheus as datasource: use `http://host.docker.internal:9090` as URL of prometheus. 
-* Import the dashboard as JSON files in this package. 
+* Import the dashboard as JSON files in this package under prometheus/ folder. 
 <img width="1568" alt="Screen Shot 2021-02-20 at 11 34 52 AM" src="https://user-images.githubusercontent.com/4523955/108606574-aca52400-736f-11eb-9380-ad2cb9de1545.png">
 
 Note that some non-latency metrics are not properly shown until this fix: https://github.com/uber/cadence/pull/4007 , unless you manually configure the buckets for Prometheus. 
