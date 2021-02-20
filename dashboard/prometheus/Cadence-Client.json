@@ -611,13 +611,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_workflow_faled[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_faled[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "E"
         },
         {
-          "expr": "rate(workflow_timeout[10s])",
+          "expr": "ceil(rate(workflow_timeout[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "G"
@@ -712,31 +712,31 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_workflow_completed[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_completed[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(Worker__cadence_workflow_start[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_start[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_workflow_canceled[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_canceled[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
         },
         {
-          "expr": "rate(Worker__cadence_workflow_continue_as_new[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_continue_as_new[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
         },
         {
-          "expr": "rate(Worker__cadence_workflow_signal_with_start[10s]) ",
+          "expr": "ceil(rate(Worker__cadence_workflow_signal_with_start[10s]) )",
           "interval": "",
           "legendFormat": "",
           "refId": "F"
@@ -831,13 +831,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_activity_task_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_task_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_activity_task_panic[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_task_panic[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
@@ -932,19 +932,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_activity_task_completed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_task_completed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(Worker__cadence_activity_task_canceled[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_task_canceled[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "E"
         },
         {
-          "expr": "rate(Worker__cadence_activity_poll_succeed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_succeed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
@@ -1039,19 +1039,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_local_activity_timeout[10s])",
+          "expr": "ceil(rate(Worker__cadence_local_activity_timeout[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_local_activity_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_local_activity_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
         },
         {
-          "expr": "rate(Worker__cadence_local_activity_panic[10s])",
+          "expr": "ceil(rate(Worker__cadence_local_activity_panic[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "E"
@@ -1146,13 +1146,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_local_activity_total[10s])",
+          "expr": "ceil(rate(Worker__cadence_local_activity_total[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(Worker__cadence_local_activity_canceled[10s])",
+          "expr": "ceil(rate(Worker__cadence_local_activity_canceled[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
@@ -1248,25 +1248,25 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_decision_task_panic[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_task_panic[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_decision_response_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_response_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
         },
         {
-          "expr": "rate(Worker__cadence_decision_timeout[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_timeout[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
         },
         {
-          "expr": "rate(Worker__cadence_non_deterministic_error[10s])",
+          "expr": "ceil(rate(Worker__cadence_non_deterministic_error[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1362,7 +1362,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_decision_task_completed[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_task_completed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1458,13 +1458,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_decision_poll_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_poll_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_decision_poll_transient_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_poll_transient_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
@@ -1560,19 +1560,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_decision_poll_total[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_poll_total[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(Worker__cadence_decision_poll_no_task[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_poll_no_task[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
         },
         {
-          "expr": "rate(Worker__cadence_decision_poll_succeed[10s])",
+          "expr": "ceil(rate(Worker__cadence_decision_poll_succeed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "E"
@@ -1668,13 +1668,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_activity_poll_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_activity_poll_transient_failed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_transient_failed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
@@ -1770,19 +1770,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(Worker__cadence_activity_poll_total[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_total[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(Worker__cadence_activity_poll_no_task[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_no_task[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(Worker__cadence_activity_poll_succeed[10s])",
+          "expr": "ceil(rate(Worker__cadence_activity_poll_succeed[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"

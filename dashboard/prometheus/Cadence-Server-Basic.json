@@ -66,13 +66,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_errors[10s])",
+          "expr": "ceil(rate(cadence_errors[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(cadence_errors_critical[10s])",
+          "expr": "ceil(rate(cadence_errors_critical[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -167,7 +167,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_requests{cadence_service=\"cadence_frontend\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{cadence_service=\"cadence_frontend\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -358,7 +358,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(persistence_requests[10s])",
+          "expr": "ceil(rate(persistence_requests[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -453,19 +453,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_requests{operation=\"StartWorkflowExecution\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"StartWorkflowExecution\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(cadence_requests{operation=\"SignalWithStartWorkflowExecution\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"SignalWithStartWorkflowExecution\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(cadence_requests{operation=\"SignalWorkflowExecution\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"SignalWorkflowExecution\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
@@ -560,7 +560,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_requests{operation=\"RecordActivityTaskStarted\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"RecordActivityTaskStarted\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -655,7 +655,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_requests{operation=\"RecordDecisionTaskStarted\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"RecordDecisionTaskStarted\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -750,13 +750,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(cadence_requests{operation=\"PollForActivityTask\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"PollForActivityTask\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(cadence_requests{operation=\"PollForDecisionTask\"}[10s])",
+          "expr": "ceil(rate(cadence_requests{operation=\"PollForDecisionTask\"}[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -851,25 +851,25 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(sharditem_created_count[10s])",
+          "expr": "ceil(rate(sharditem_created_count[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
         },
         {
-          "expr": "rate(sharditem_removed_count[10s])",
+          "expr": "ceil(rate(sharditem_removed_count[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         },
         {
-          "expr": "rate(shard_closed_count[10s])",
+          "expr": "ceil(rate(shard_closed_count[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "C"
         },
         {
-          "expr": "rate(membership_changed_count[10s])",
+          "expr": "ceil(rate(membership_changed_count[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "D"
@@ -964,7 +964,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(restarts[10s])",
+          "expr": "ceil(rate(restarts[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -1059,7 +1059,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(panics[10s])",
+          "expr": "ceil(rate(panics[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -1154,7 +1154,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(task_requests[10s])",
+          "expr": "ceil(rate(task_requests[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
@@ -1249,7 +1249,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(task_errors[10s])",
+          "expr": "ceil(rate(task_errors[10s]))",
           "interval": "",
           "legendFormat": "",
           "refId": "B"
