@@ -20,8 +20,13 @@ Note: `host.docker.internal` may not work for some docker versions, see https://
 * Go the the sample repo, build the helloworld sample `make helloworld` and run the worker `./bin/helloworld -m worker`, and then in another Shell start a workflow `./bin/helloworld`
 
 * Go to Prometheus server: http://localhost:9090/ , you should be able to check the metrics handler from client/frontend/matching/history/sysWorker are all healthy as targets: http://localhost:9090/targets
+<img width="1192" alt="Screen Shot 2021-02-20 at 11 31 11 AM" src="https://user-images.githubusercontent.com/4523955/108606555-8d0dfb80-736f-11eb-968d-7678df37455c.png">
+
 
 * Go to Grafana: http://localhost:3000 , login as admin/admin. 
+* Configure Prometheus as datasource: use `http://host.docker.internal:9090` as URL of prometheus. 
 * Import the dashboard as JSON files in this package. 
+<img width="1568" alt="Screen Shot 2021-02-20 at 11 34 52 AM" src="https://user-images.githubusercontent.com/4523955/108606574-aca52400-736f-11eb-9380-ad2cb9de1545.png">
+<img width="1519" alt="Screen Shot 2021-02-20 at 11 06 54 AM" src="https://user-images.githubusercontent.com/4523955/108606577-b169d800-736f-11eb-8fcb-88801f23b656.png">
 
 
