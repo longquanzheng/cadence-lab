@@ -27,6 +27,9 @@ Note: `host.docker.internal` may not work for some docker versions, see https://
 * Configure Prometheus as datasource: use `http://host.docker.internal:9090` as URL of prometheus. 
 * Import the dashboard as JSON files in this package. 
 <img width="1568" alt="Screen Shot 2021-02-20 at 11 34 52 AM" src="https://user-images.githubusercontent.com/4523955/108606574-aca52400-736f-11eb-9380-ad2cb9de1545.png">
+
+Note that some non-latency metrics are not properly shown until this fix: https://github.com/uber/cadence/pull/4007 , unless you manually configure the buckets for Prometheus. 
+This is because of issue https://github.com/uber/cadence/issues/4006 
 <img width="1519" alt="Screen Shot 2021-02-20 at 11 06 54 AM" src="https://user-images.githubusercontent.com/4523955/108606577-b169d800-736f-11eb-8fcb-88801f23b656.png">
 
 
