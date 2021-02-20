@@ -28,10 +28,10 @@ Note: `host.docker.internal` may not work for some docker versions, see https://
 * Import the dashboard as JSON files in this package under prometheus/ folder. 
 
 Client side dashboard looks like this:
-<img width="1568" alt="Screen Shot 2021-02-20 at 11 34 52 AM" src="https://user-images.githubusercontent.com/4523955/108606574-aca52400-736f-11eb-9380-ad2cb9de1545.png">
+<img width="1513" alt="Screen Shot 2021-02-20 at 12 32 23 PM" src="https://user-images.githubusercontent.com/4523955/108607838-b7fc4d80-7377-11eb-8fd9-edc0e58afaad.png">
 
 And server basic dashboard:
-<img width="1576" alt="Screen Shot 2021-02-20 at 12 10 53 PM" src="https://user-images.githubusercontent.com/4523955/108607354-b54c2900-7374-11eb-8f30-99f0565024f5.png">
+<img width="1514" alt="Screen Shot 2021-02-20 at 12 31 54 PM" src="https://user-images.githubusercontent.com/4523955/108607843-baf73e00-7377-11eb-9759-e67a1a00f442.png">
 
 
 Note that some non-latency metrics are not properly shown until this fix: https://github.com/uber/cadence/pull/4007 , unless you manually configure the buckets for Prometheus. 
