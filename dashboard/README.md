@@ -3,7 +3,7 @@ This package contains examples of Cadence dashboards with Prometheus.
 
 Cadence-Client is the dashboard of client metrics, and a few server side metrics that belong to client side but have to be emitted by server(for example, workflow timeout).
 
-TODO: Cadence-Server-Basic the the basic server dashboard to monitor/navigate the health/status of a Cadence cluster.
+Cadence-Server-Basic is the the basic server dashboard to monitor/navigate the health/status of a Cadence cluster.
 
 # How
 
@@ -26,7 +26,13 @@ Note: `host.docker.internal` may not work for some docker versions, see https://
 * Go to Grafana: http://localhost:3000 , login as admin/admin. 
 * Configure Prometheus as datasource: use `http://host.docker.internal:9090` as URL of prometheus. 
 * Import the dashboard as JSON files in this package under prometheus/ folder. 
+
+Client side dashboard looks like this:
 <img width="1568" alt="Screen Shot 2021-02-20 at 11 34 52 AM" src="https://user-images.githubusercontent.com/4523955/108606574-aca52400-736f-11eb-9380-ad2cb9de1545.png">
+
+And server basic dashboard:
+<img width="1576" alt="Screen Shot 2021-02-20 at 12 10 53 PM" src="https://user-images.githubusercontent.com/4523955/108607354-b54c2900-7374-11eb-8f30-99f0565024f5.png">
+
 
 Note that some non-latency metrics are not properly shown until this fix: https://github.com/uber/cadence/pull/4007 , unless you manually configure the buckets for Prometheus. 
 This is because of issue https://github.com/uber/cadence/issues/4006 
