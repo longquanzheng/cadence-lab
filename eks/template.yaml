@@ -1,0 +1,790 @@
+---
+# Source: cadence/templates/server-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: RELEASE-NAME-cadence-default-store
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/part-of: cadence
+type: Opaque
+data:
+  password: "Y2FkZW5jZXRlc3Q="
+---
+# Source: cadence/templates/server-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: RELEASE-NAME-cadence-visibility-store
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/part-of: cadence
+type: Opaque
+data:
+  password: "Y2FkZW5jZXRlc3Q="
+---
+# Source: cadence/templates/server-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: RELEASE-NAME-cadence
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/part-of: cadence
+data:
+  config_template.yaml: |-
+    log:
+      stdout: true
+      level: "debug,info"
+      levelKey: "level"
+
+    persistence:
+      defaultStore: default
+      visibilityStore: visibility
+      numHistoryShards: 512
+      datastores:
+        default:
+          sql:
+            pluginName: mysql
+            databaseName: cadence
+            connectAddr: "cadence.cluster-cqfqlx5b5vd6.us-west-2.rds.amazonaws.com:3306"
+            connectProtocol: "tcp"
+            user: cadence
+            password: {{ .Env.CADENCE_STORE_PASSWORD }}
+            connectAttributes:
+              tx_isolation: READ-COMMITTED
+        visibility:
+          sql:
+            pluginName: mysql
+            databaseName: cadence_visibility
+            connectAddr: "cadence.cluster-cqfqlx5b5vd6.us-west-2.rds.amazonaws.com:3306"
+            connectProtocol: "tcp"
+            user: cadence
+            password: {{ .Env.CADENCE_VISIBILITY_STORE_PASSWORD }}
+            connectAttributes:
+              tx_isolation: READ-COMMITTED
+
+    ringpop:
+      name: cadence
+      bootstrapMode: dns
+      bootstrapHosts:
+        - RELEASE-NAME-cadence-frontend-headless:7833
+        - RELEASE-NAME-cadence-frontend-headless:7933
+        - RELEASE-NAME-cadence-history-headless:7834
+        - RELEASE-NAME-cadence-history-headless:7934
+        - RELEASE-NAME-cadence-matching-headless:7835
+        - RELEASE-NAME-cadence-matching-headless:7935
+        - RELEASE-NAME-cadence-worker-headless:7939
+      maxJoinDuration: 30s
+
+    services:
+      frontend:
+        rpc:
+          grpcPort: 7833
+          port: 7933
+          bindOnIP: {{ default .Env.POD_IP "0.0.0.0" }}
+        metrics:
+          tags:
+            type: frontend
+          prometheus:
+            timerType: histogram
+            listenAddress: "0.0.0.0:9090"
+
+      history:
+        rpc:
+          grpcPort: 7834
+          port: 7934
+          bindOnIP: {{ default .Env.POD_IP "0.0.0.0" }}
+        metrics:
+          tags:
+            type: history
+          prometheus:
+            timerType: histogram
+            listenAddress: "0.0.0.0:9090"
+
+      matching:
+        rpc:
+          grpcPort: 7835
+          port: 7935
+          bindOnIP: {{ default .Env.POD_IP "0.0.0.0" }}
+        metrics:
+          tags:
+            type: matching
+          prometheus:
+            timerType: histogram
+            listenAddress: "0.0.0.0:9090"
+
+      worker:
+        rpc:
+          port: 7939
+          bindOnIP: {{ default .Env.POD_IP "0.0.0.0" }}
+        metrics:
+          tags:
+            type: worker
+          prometheus:
+            timerType: histogram
+            listenAddress: "0.0.0.0:9090"
+
+    clusterMetadata:
+      enableGlobalDomain: {{ default .Env.ENABLE_GLOBAL_DOMAIN "false" }}
+      failoverVersionIncrement: 10
+      masterClusterName: "primary"
+      currentClusterName: "primary"
+      clusterInformation:
+        primary:
+          enabled: true
+          initialFailoverVersion: 0
+          rpcName: "cadence-frontend"
+          rpcAddress: {{ default .Env.PRIMARY_FRONTEND_SERVICE "cadence" }}:7933
+
+    dcRedirectionPolicy:
+      policy: {{ default .Env.DC_REDIRECT_POLICY "selected-apis-forwarding" }}
+      toDC: ""
+
+    archival:
+      status: "disabled"
+
+    publicClient:
+      hostPort: "RELEASE-NAME-cadence-frontend:7933"
+
+    dynamicConfigClient:
+      filepath: "/etc/cadence/config/dynamicconfig/config.yaml"
+      pollInterval: "10s"
+
+  dynamic_config.yaml: |-
+            {}
+---
+# Source: cadence/templates/server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-frontend
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: cadence
+spec:
+  type: ClusterIP
+  ports:
+    - port: 7933
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: frontend
+---
+# Source: cadence/templates/server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-frontend-headless
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: cadence
+    app.kubernetes.io/headless: 'true'
+  annotations:
+    # Use this annotation in addition to the actual field below because the
+    # annotation will stop being respected soon but the field is broken in
+    # some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 7933
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    - port: 9090
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: frontend
+---
+# Source: cadence/templates/server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-matching-headless
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: matching
+    app.kubernetes.io/part-of: cadence
+    app.kubernetes.io/headless: 'true'
+  annotations:
+    # Use this annotation in addition to the actual field below because the
+    # annotation will stop being respected soon but the field is broken in
+    # some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 7935
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    - port: 9090
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: matching
+---
+# Source: cadence/templates/server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-history-headless
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: history
+    app.kubernetes.io/part-of: cadence
+    app.kubernetes.io/headless: 'true'
+  annotations:
+    # Use this annotation in addition to the actual field below because the
+    # annotation will stop being respected soon but the field is broken in
+    # some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 7934
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    - port: 9090
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: history
+---
+# Source: cadence/templates/server-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-worker-headless
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: cadence
+    app.kubernetes.io/headless: 'true'
+  annotations:
+    # Use this annotation in addition to the actual field below because the
+    # annotation will stop being respected soon but the field is broken in
+    # some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - port: 7939
+      targetPort: rpc
+      protocol: TCP
+      name: rpc
+    - port: 9090
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: worker
+---
+# Source: cadence/templates/web-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: RELEASE-NAME-cadence-web
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: cadence
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: cadence
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/component: web
+---
+# Source: cadence/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cadence-frontend
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: frontend
+    app.kubernetes.io/part-of: cadence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadence
+      app.kubernetes.io/instance: RELEASE-NAME
+      app.kubernetes.io/component: frontend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cadence
+        helm.sh/chart: cadence-0.20.3
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/version: 0.21.3
+        app.kubernetes.io/component: frontend
+        app.kubernetes.io/part-of: cadence
+      annotations:
+        checksum/config: 765c7e7c8eec63e098e3abd29d5b6d0bf44c6c7ffb366c368973d47554b1eae8
+    spec:
+      securityContext:
+        {}
+      initContainers:
+          []
+      containers:
+        - name: cadence-frontend
+          securityContext:
+            {}
+          image: "ubercadence/server:0.21.3"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICES
+              value: frontend
+            - name: CADENCE_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-default-store
+                  key: password
+            - name: CADENCE_VISIBILITY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-visibility-store
+                  key: password
+          ports:
+            - name: rpc
+              containerPort: 7933
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 150
+            tcpSocket:
+              port: rpc
+          readinessProbe:
+            initialDelaySeconds: 10
+            tcpSocket:
+              port: rpc
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cadence/config/config_template.yaml
+              subPath: config_template.yaml
+            - name: config
+              mountPath: /etc/cadence/config/dynamicconfig/config.yaml
+              subPath: dynamic_config.yaml
+          resources:
+            {}
+      volumes:
+        - name: config
+          configMap:
+            name: RELEASE-NAME-cadence
+---
+# Source: cadence/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cadence-history
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: history
+    app.kubernetes.io/part-of: cadence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadence
+      app.kubernetes.io/instance: RELEASE-NAME
+      app.kubernetes.io/component: history
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cadence
+        helm.sh/chart: cadence-0.20.3
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/version: 0.21.3
+        app.kubernetes.io/component: history
+        app.kubernetes.io/part-of: cadence
+      annotations:
+        checksum/config: 765c7e7c8eec63e098e3abd29d5b6d0bf44c6c7ffb366c368973d47554b1eae8
+    spec:
+      securityContext:
+        {}
+      initContainers:
+          []
+      containers:
+        - name: cadence-history
+          securityContext:
+            {}
+          image: "ubercadence/server:0.21.3"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICES
+              value: history
+            - name: CADENCE_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-default-store
+                  key: password
+            - name: CADENCE_VISIBILITY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-visibility-store
+                  key: password
+          ports:
+            - name: rpc
+              containerPort: 7934
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 150
+            tcpSocket:
+              port: rpc
+          readinessProbe:
+            initialDelaySeconds: 10
+            tcpSocket:
+              port: rpc
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cadence/config/config_template.yaml
+              subPath: config_template.yaml
+            - name: config
+              mountPath: /etc/cadence/config/dynamicconfig/config.yaml
+              subPath: dynamic_config.yaml
+          resources:
+            {}
+      volumes:
+        - name: config
+          configMap:
+            name: RELEASE-NAME-cadence
+---
+# Source: cadence/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cadence-matching
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: matching
+    app.kubernetes.io/part-of: cadence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadence
+      app.kubernetes.io/instance: RELEASE-NAME
+      app.kubernetes.io/component: matching
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cadence
+        helm.sh/chart: cadence-0.20.3
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/version: 0.21.3
+        app.kubernetes.io/component: matching
+        app.kubernetes.io/part-of: cadence
+      annotations:
+        checksum/config: 765c7e7c8eec63e098e3abd29d5b6d0bf44c6c7ffb366c368973d47554b1eae8
+    spec:
+      securityContext:
+        {}
+      initContainers:
+          []
+      containers:
+        - name: cadence-matching
+          securityContext:
+            {}
+          image: "ubercadence/server:0.21.3"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICES
+              value: matching
+            - name: CADENCE_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-default-store
+                  key: password
+            - name: CADENCE_VISIBILITY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-visibility-store
+                  key: password
+          ports:
+            - name: rpc
+              containerPort: 7935
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 150
+            tcpSocket:
+              port: rpc
+          readinessProbe:
+            initialDelaySeconds: 10
+            tcpSocket:
+              port: rpc
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cadence/config/config_template.yaml
+              subPath: config_template.yaml
+            - name: config
+              mountPath: /etc/cadence/config/dynamicconfig/config.yaml
+              subPath: dynamic_config.yaml
+          resources:
+            {}
+      volumes:
+        - name: config
+          configMap:
+            name: RELEASE-NAME-cadence
+---
+# Source: cadence/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cadence-worker
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: cadence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadence
+      app.kubernetes.io/instance: RELEASE-NAME
+      app.kubernetes.io/component: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cadence
+        helm.sh/chart: cadence-0.20.3
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/version: 0.21.3
+        app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: cadence
+      annotations:
+        checksum/config: 765c7e7c8eec63e098e3abd29d5b6d0bf44c6c7ffb366c368973d47554b1eae8
+    spec:
+      securityContext:
+        {}
+      initContainers:
+          []
+      containers:
+        - name: cadence-worker
+          securityContext:
+            {}
+          image: "ubercadence/server:0.21.3"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SERVICES
+              value: worker
+            - name: CADENCE_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-default-store
+                  key: password
+            - name: CADENCE_VISIBILITY_STORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: RELEASE-NAME-cadence-visibility-store
+                  key: password
+          ports:
+            - name: rpc
+              containerPort: 7939
+              protocol: TCP
+            - name: metrics
+              containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 150
+            tcpSocket:
+              port: rpc
+          readinessProbe:
+            initialDelaySeconds: 10
+            tcpSocket:
+              port: rpc
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cadence/config/config_template.yaml
+              subPath: config_template.yaml
+            - name: config
+              mountPath: /etc/cadence/config/dynamicconfig/config.yaml
+              subPath: dynamic_config.yaml
+          resources:
+            {}
+      volumes:
+        - name: config
+          configMap:
+            name: RELEASE-NAME-cadence
+---
+# Source: cadence/templates/web-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: RELEASE-NAME-cadence-web
+  labels:
+    app.kubernetes.io/name: cadence
+    helm.sh/chart: cadence-0.20.3
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/version: 0.21.3
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: cadence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cadence
+      app.kubernetes.io/instance: RELEASE-NAME
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cadence
+        helm.sh/chart: cadence-0.20.3
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/version: 0.21.3
+        app.kubernetes.io/component: web
+        app.kubernetes.io/part-of: cadence
+    spec:
+      securityContext:
+        {}
+      initContainers:
+        - name: check-frontend
+          securityContext:
+            {}
+          image: "ghcr.io/banzaicloud/tcheck:latest"
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'until tcheck --peer RELEASE-NAME-cadence-frontend:7933 --serviceName cadence-frontend; do echo waiting for frontend; sleep 2; done;']
+      containers:
+        - name: cadence-web
+          securityContext:
+            {}
+          image: "ubercadence/web:v3.27.0"
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: CADENCE_TCHANNEL_PEERS
+            value: "RELEASE-NAME-cadence-frontend:7933"
+
+          ports:
+            - name: http
+              containerPort: 8088
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}

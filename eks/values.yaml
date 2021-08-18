@@ -1,0 +1,37 @@
+server:
+  config:
+    persistence:
+      default:
+        driver: "sql"
+
+        sql:
+          pluginName: "mysql"
+          host: "<FILL IT HERE>.rds.amazonaws.com"
+          port: 3306
+          database: cadence
+          user: "<FILL IT HERE>"
+          password: "<FILL IT HERE>"
+          connectAttributes:
+            tx_isolation: "READ-COMMITTED"
+
+      visibility:
+        driver: "sql"
+
+        sql:
+          pluginName: "mysql"
+          host: "<FILL IT HERE>.rds.amazonaws.com"
+          port: 3306
+          database: cadence_visibility
+          user: "<FILL IT HERE>"
+          password: "<FILL IT HERE>"
+          connectAttributes:
+            tx_isolation: "READ-COMMITTED"
+
+cassandra:
+  enabled: false
+
+schema:
+  setup:
+    enabled: false
+  update:
+    enabled: false
