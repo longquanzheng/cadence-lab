@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cadence-loadtest-config
+  labels:
+    app: cadence-bench
+data:
+  config.yaml: |-
+    log:
+      stdout: true
+      level: info
+
+    bench:
+      name: "cadence-bench"
+      domains: ["cadence-bench", "cadence-bench-sync", "cadence-bench-batch"]
+      numTaskLists: 1
+
+    cadence:
+      service: "cadence-frontend"
+      host: "cadence-loadtest-frontend:7933"
+---
+# Source: cadence/templates/server-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cadence-bench
+  labels:
+    app: cadence-bench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cadence-bench
+  template:
+    metadata:
+      labels:
+        app: cadence-bench
+    spec:
+      containers:
+        - name: cadence-bench
+          image: "ubercadence/cadence-bench:latest"
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cadence-bench/config/bench/development.yaml
+              subPath: config.yaml
+      volumes:
+        - name: config
+          configMap:
+            name: cadence-loadtest-config
