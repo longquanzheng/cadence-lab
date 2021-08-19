@@ -1,5 +1,18 @@
 server:
+  frontend:
+    replicaCount: 1
+  history:
+    replicaCount: 1
+  matching:
+    replicaCount: 1
+  worker:
+    replicaCount: 1
+
   config:
+
+    # IMPORTANT: This value cannot be changed, once it's set.
+    numHistoryShards: 512
+    
     persistence:
       default:
         driver: "sql"
