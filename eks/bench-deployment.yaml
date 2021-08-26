@@ -20,7 +20,6 @@ data:
       service: "cadence-frontend"
       host: "cadence-loadtest-frontend:7933"
 ---
-# Source: cadence/templates/server-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
