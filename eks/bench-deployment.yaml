@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: cadence-bench
-          image: "ubercadence/cadence-bench:latest"
+          image: "ubercadence/cadence-bench:master"
           imagePullPolicy: Always
           volumeMounts:
             - name: config
